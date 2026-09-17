@@ -1,6 +1,6 @@
 ---
 title: "Problem Set 05: Regression with One Categorical Variable"
-author: "Your Name"
+author: "Thomas G Kopchik"
 date: last-modified
 date-format: "[Last modified on] MMMM DD, YYYY HH:mm:ss zzz"
 format: 
@@ -58,19 +58,19 @@ Each case/row in these data is a state in the US. The response variable we will 
 
 This week we will use three categorical explanatory variables in this data set:
 
--   `trump_support`: level of Trump support in 2016 election (low, medium or high - split into roughly equal number of cases)
+- `trump_support`: level of Trump support in 2016 election (low, medium or high - split into roughly equal number of cases)
 
--   `unemployment`: level of unemployment in a state (low or high - split below or above mean)
+- `unemployment`: level of unemployment in a state (low or high - split below or above mean)
 
--   `median_house_inc`: median household income in the state (low or high - split below or above median)
+- `median_house_inc`: median household income in the state (low or high - split below or above median)
 
 # Hate Crimes and Trump Support
 
 Let's start by modeling the relationship between:
 
--   $y$: `hate_crimes` per 100K individuals
+- $y$: `hate_crimes` per 100K individuals
 
--   $x$: Level of `trump_support` in the state: `low`, `medium`, or `high`
+- $x$: Level of `trump_support` in the state: `low`, `medium`, or `high`
 
 ::: {.callout-note icon="false" title="Problem 1"}
 Create a visual model of these data (a graph) that will allow you to conduct an "eyeball test" of the relationship between hate crimes per 100K and level of Trump support. Include appropriate axes labels and a title. Please note that because of alphanumeric ordering, the levels of `trump_support` are ordered `high`, `low`, `medium`, and hence the baseline group is `high`. Also note that we could "reorder" the levels to `low`, `medium`, `high`....though we will leave the levels as is for this Problem Set.
@@ -80,6 +80,12 @@ Create a visual model of these data (a graph) that will allow you to conduct an 
 ```{r}
 # Type your code and comments inside the code chunk
 
+ggplot(hate_crimes, aes(x = trump_support, y = hate_crimes)) +
+  geom_boxplot(aes(fill = trump_support)) +
+  labs(x = "Levels of Trump Support", 
+       y = "Hate Crimes per 100k People", 
+       title = "Levels of Trump Support vs. Hate Crimes per 100k People") +
+  theme_bw()
 
 ```
 :::
@@ -89,7 +95,7 @@ Create a visual model of these data (a graph) that will allow you to conduct an 
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 2 Answers"}
--   Delete this and put your text answer here.
+- This relationship is not something I would have expected intuitively. However, considering that areas like cities typically vote blue, and cities are overwhelmingly where hate crimes occur (from what I have seen personally), I think it makes a bit of sense.
 :::
 
 ::: {.callout-note icon="false" title="Problem 3"}
@@ -98,7 +104,9 @@ Create a model that examines the relationship between hate crime rates and the l
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 3 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
+hate_mod <- lm(hate_crimes ~ trump_support, data = hate_crimes)
+
+get_regression_table(hate_mod)
 
 ```
 :::
@@ -108,7 +116,7 @@ What does the intercept mean in this regression table?
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 4 Answers"}
--   Delete this and put your text answer here.
+- The intercept indicates that high trump support is the baseline for comparison; it is the y-intercept of the regression line for high trump support. The other values are offsets.
 :::
 
 ::: {.callout-note icon="false" title="Problem 5"}
@@ -116,12 +124,7 @@ What does the model estimate as the number of hate crimes per 100,000 people in 
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 5 Answers"}
--   Delete this and put your text answer here.
-
-```{r}
-# Type your code and comments inside the code chunk
-
-```
+- The model estimates that there are `r coef(hate_mod)[1] + coef(hate_mod)[2]` hate crimes per 100,000 people in states with "low" Trump support.
 :::
 
 ::: {.callout-note icon="false" title="Problem 6"}
@@ -129,12 +132,7 @@ Does the model estimate that hate crimes are more frequent in states that show "
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 6 Answers"}
-```{r}
-# Type your code and comments inside the code chunk
-
-```
-
--   Delete this and put your text answer here.
+- The model estimates that hate crimes are more frequent in states that show "low" support for Trump. Compared to the value of `r coef(hate_mod)[1] + coef(hate_mod)[2]` hate crimes per 100k in "low" support areas, there are only `r coef(hate_mod)[1]` hate crimes per 100k in "high" support areas.
 :::
 
 ::: {.callout-note icon="false" title="Problem 7"}
@@ -142,12 +140,7 @@ How much greater were hate crimes in "medium" Trump-support states compared to "
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 7 Answers"}
-```{r, label = "delta"}
-# Type your code and comments inside the code chunk
-
-```
-
--   Delete this and put your text answer here.
+- Hate crimes are `r coef(hate_mod)[3]` greater in "medium" trump-support states compared to "high" trump-support states.
 :::
 
 ::: {.callout-note icon="false" title="Problem 8"}
@@ -156,15 +149,14 @@ What are the three possible fitted values $\hat{y}$ for this model? Hint: use th
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 8 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
-
+get_regression_points(hate_mod)
 ```
 
--   Delete this and put your text answer here.
+- The value of $\hat{y}$ for "low" support would be 0.460.
 
--   Delete this and put your text answer here.
+- The value of $\hat{y}$ for "medium" support would be 0.222.
 
--   Delete this and put your text answer here.
+- The value of $\hat{y}$ for "high" support would be 0.191.
 :::
 
 ::: {.callout-note icon="false" title="Problem 9"}
@@ -178,7 +170,7 @@ group_by(trump_support) |>
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 9 Answers"}
--   Delete this and put your text answer here.
+- The mean values are the same as the $\hat{y}$ values for each category.
 :::
 
 ## The Regression Equation
@@ -189,15 +181,12 @@ The regression equation for this model is the following (render the document and
 hate_mod <- lm(hate_crimes ~ trump_support, data = hate_crimes)
 ```
 
-$$
-\widehat{\text{hate\_crimes}} = `r coef(hate_mod)[1]` + `r coef(hate_mod)[2]` \times 1_{\text{low support}}(x) + `r coef(hate_mod)[3]` \times 1_{\text{med support}}(x)
-$$
+$$\widehat{\text{hate\_crimes}} = `r coef(hate_mod)[1]` + `r coef(hate_mod)[2]` \times 1_{\text{low support}}(x) + `r coef(hate_mod)[3]` \times 1_{\text{med support}}(x)$$
 
 Another notation is to use a dummy variables ($D_1$, and $D_2$) and write the equation as
 
 $$\widehat{y} = `r coef(hate_mod)[1]` + `r coef(hate_mod)[2]` \times D_1 + `r coef(hate_mod)[3]` \times D_2$$ where
 
-```{=tex}
 \begin{equation*}
 D_1 =
 \begin{cases}
@@ -205,10 +194,7 @@ D_1 =
 0 &\text{for medium Trump support}\\
 0 &\text{for high Trump support}
 \end{cases}
-\end{equation*}
-```
-```{=tex}
-\begin{equation*}
+\end{equation*} \begin{equation*}
 D_2 =
 \begin{cases}
 0 &\text{for low Trump support}\\
@@ -216,30 +202,27 @@ D_2 =
 0 &\text{for high Trump support}
 \end{cases}
 \end{equation*}
-```
+
 So for instance, in a state in which `trump_support` is "low" you would plug in 1 for $1_{\mbox{low support}}(x)$, and 0 in for $1_{\mbox{med support}}(x)$ and solve as follows:
 
-$$
-\begin{aligned} 
+$$\begin{aligned} 
 \widehat{y} &= `r coef(hate_mod)[1]` + `r coef(hate_mod)[2]` \times 1 + `r coef(hate_mod)[3]` \times 0 \\
 \widehat{y} &= `r coef(hate_mod)[1]` + `r coef(hate_mod)[2]` + 0\\
 \widehat{y} &= `r coef(hate_mod)[1] + coef(hate_mod)[2]`
-\end{aligned} 
-$$
+\end{aligned} $$
 
 ::: {.callout-note icon="false" title="Problem 10"}
 Solve the regression equation for a state in which `trump_support` is "high".
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 10 Answers"}
-Your $LaTeX$ here
+$$\widehat{\text{hate\_crimes}} = `r coef(hate_mod)[1]` + `r coef(hate_mod)[2]` \times 0 + `r coef(hate_mod)[3]` \times 0$$
 
 ```{r}
-# Type your code and comments inside the code chunk
-
+coef(hate_mod)[1] + coef(hate_mod)[2] * 0 + coef(hate_mod)[3] * 0
 ```
 
--   Delete this and put your text answer here.
+- The solved regression equation is $\hat{y}$ = `r coef(hate_mod)[1]`.
 :::
 
 ::: {.callout-note icon="false" title="Problem 11"}
@@ -250,19 +233,24 @@ Do these results surprise you? (There is no right answer to this question.)
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 11 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
+hate_mod_states <- hate_crimes |>
+  select(state, hate_crimes, trump_support) |>
+  filter(state != "District of Columbia") |>
+  group_by(state) |> 
+  arrange(desc(hate_crimes))
 
+head(hate_mod_states, 5)
 ```
 
--   Delete this and put your text answer here.
+- Oregon, Washington, Massachusetts, Minnesota, and Maine were the top 5 states in terms of hate crimes. They all had "low" trump support. These results initially surprised me, though that mostly comes from my lack of knowledge about these states in general.
 :::
 
 # Hate Crimes and Unemployment
 
 We will next model the relationship between:
 
--   $y$: `hate_crimes` per 100K individuals after the 2016 US election
--   $x$: Level of unemployment in the state (`low`, or `high`)
+- $y$: `hate_crimes` per 100K individuals after the 2016 US election
+- $x$: Level of unemployment in the state (`low`, or `high`)
 
 ::: {.callout-note icon="false" title="Problem 12"}
 Create a visual model of this data (a graph) that will allow you to conduct an "eyeball test" of the relationship between hate crimes per 100K and unemployment level. Include appropriate axes labels and a title.
@@ -270,7 +258,12 @@ Create a visual model of this data (a graph) that will allow you to conduct an "
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 12 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
+ggplot(data = hate_crimes, aes(x = unemployment, y = hate_crimes)) +
+  geom_boxplot(aes(fill = unemployment)) +
+  labs(x = "Unemployment Level",
+       y = "Hate Crimes Committed",
+       title = "Hate Crimes Committed vs. Unemployment Level Per 100k People") +
+  theme_bw()
 
 ```
 :::
@@ -281,8 +274,9 @@ Create a model that examines the relationship between hate crime rates and the u
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 13 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
+job_mod <- lm(hate_crimes ~ unemployment, data = hate_crimes)
 
+get_regression_table(job_mod)
 ```
 :::
 
@@ -291,7 +285,7 @@ Write out the regression equation for `job_mod`.
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 14 Answers"}
-Write your equation with $LaTeX$ here.
+$$\widehat{\text{hate\_crimes}} = `r coef(job_mod)[1]` + `r coef(job_mod)[2]` \times D_1$$
 :::
 
 ::: {.callout-note icon="false" title="Problem 15"}
@@ -299,7 +293,7 @@ Interpret the estimate of the intercept from the table below.
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 15 Answers"}
--   Delete this and put your text answer here.
+- The intercept indicates that for 100k people at a high unemployment level there is an average of 0.289 hate crimes committed.
 :::
 
 ::: {.callout-note icon="false" title="Problem 16"}
@@ -307,12 +301,7 @@ What does the model estimate the number of hate crimes per 100,000 people to be 
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 16 Answers"}
-```{r}
-# Type your code and comments inside the code chunk
-
-```
-
--   Delete this and put your text answer here.
+- The model estimates an average of `r coef(job_mod)[1] + coef(job_mod)[2]` hate crimes per 100,000 people in a state with "low" unemployment.
 :::
 
 ::: {.callout-note icon="false" title="Problem 17"}
@@ -321,11 +310,11 @@ What are the two possible fitted values $\widehat{y}$ for this model? Why are th
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 17 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
-
+coef(job_mod)[1]
+coef(job_mod)[1] + coef(job_mod)[2]
 ```
 
--   Delete this and put your text answer here.
+- The two possible fitted values for the model are 0.289 for "high" unemployment and 0.320 for "low" unemployment. There are only two values this time because there are only two categories for the categorical variable.
 :::
 
 ::: {.callout-note icon="false" title="Problem 18"}
@@ -334,11 +323,10 @@ Use the `get_regression_points()` function to generate a table showing the fitte
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 18 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
-
+get_regression_points(job_mod)
 ```
 
--   Delete this and put your text answer here.
+- The residuals seem to be calculated by subtracting the `hate_crimes_hat` value from the `hate_crimes` value.
 :::
 
 # Hate Crimes and Household Income
@@ -349,8 +337,9 @@ Create a model that examines the relationship between `hate_crimes` and median h
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 19 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
+job_med_mod <- lm(hate_crimes ~ median_house_inc, data = hate_crimes)
 
+summary(job_med_mod)
 ```
 :::
 
@@ -359,7 +348,7 @@ Were there more hate crimes in areas with high or low median household incomes? 
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 20 Answers"}
--   Delete this and put your text answer here.
+- There were more hate crimes in areas with high median income households, with an estimate of `r coef(job_med_mod)[1]` hate crimes per 100k people. The difference between "high" and "low" levels of household income is approximately `r abs(coef(job_med_mod)[2])`.
 :::
 
 ::: {.callout-note icon="false" title="Problem 21"}
@@ -368,8 +357,9 @@ Show the first six rows of the output created from running the `get_regression_p
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 21 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
+job_med_modder <- get_regression_points(job_med_mod)
 
+head(job_med_modder)
 ```
 :::
 
@@ -379,11 +369,10 @@ Take a look at data for Maine (row 2 of `hate_crimes`). Did the model (`job_med_
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 22 Answers"}
 ```{r}
-# Type your code and comments inside the code chunk
-
+hate_crimes
 ```
 
--   Delete this and put your text answer here.
+- The predicted value for `hate_crimes` matches one-to-one with the value in row 2.
 :::
 
 # **EXTRA**
@@ -412,8 +401,8 @@ ggplot(data = hate_crimes, aes(x = trump_support, y = hate_crimes)) +
 You will need to make sure you commit and push all of your changes to the github education repository where you obtained the lab.
 
 ::: callout-tip
--   Make sure you **render a final copy with all your changes** and work.
--   Look at your final html file to make sure it contains the work you expect and is formatted properly.
+- Make sure you **render a final copy with all your changes** and work.
+- Look at your final html file to make sure it contains the work you expect and is formatted properly.
 :::
 
 # Logging out of the Server
@@ -421,11 +410,11 @@ You will need to make sure you commit and push all of your changes to the github
 There are many statistics classes and students using the Server. To keep the server running as fast as possible, it is best to sign out when you are done. To do so, follow all the same steps for closing Quarto document:
 
 ::: callout-tip
--   Save all your work.
--   Click on the orange button in the far right corner of the screen to quit `R`
--   Choose **don't save** for the **Workspace image**
--   When the browser refreshes, you can click on the sign out next to your name in the top right.
--   You are signed out.
+- Save all your work.
+- Click on the orange button in the far right corner of the screen to quit `R`
+- Choose **don't save** for the **Workspace image**
+- When the browser refreshes, you can click on the sign out next to your name in the top right.
+- You are signed out.
 :::
 
 ```{r}
